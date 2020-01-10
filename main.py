@@ -8,12 +8,16 @@ userName = "USERNAME"
 accessKey = "ACCESS_KEY"
 
 desired_caps = {
-    "build": "Python Android",
-    "device": "Pixel 3a",
-    "app": "bs://<hashed app-id>"
+  "automationName": "UIAutomator2",
+  "platformName": "Android",
+  "deviceName": "Pixel 3a",
+  "platformVersion": "10.0",
+  "appPackage": "com.nintendo.zaba",
+  "noReset": True,
+  "appActivity": "org.cocos2dx.cpp.AppActivity"
 }
 
-driver = webdriver.Remote("http://" + userName + ":" + accessKey + "@hub-cloud.browserstack.com/wd/hub", desired_caps)
+driver = webdriver.Remote("0.0.0.0:4723", desired_caps)
 
 search_element = WebDriverWait(driver, 30).until(
     EC.element_to_be_clickable((MobileBy.ACCESSIBILITY_ID, "Search Wikipedia"))

@@ -60,7 +60,7 @@ def loadTemplates(asset):
         if data['textureRotated']:
             img = numpy.rot90(img)
         templates[name] = img
-        cv2.imwrite("./uicomponents/parsed/" + name + ".png", img)
+        cv2.imwrite("./imgdump/" + name, img)
         # cv2.imshow(name, templates[name])
         # cv2.waitKey()
 
