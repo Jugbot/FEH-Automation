@@ -38,13 +38,14 @@ def parsePList(filename):
     return walkPList(root)
 
 assets = []
-for fname in os.listdir("./uicomponents"):
-    name, ext = fname.split('.')
-    if ext == "plist":
-        assets.append({
-            'source': cv2.imread("./uicomponents/" + name + ".png", cv2.IMREAD_UNCHANGED),
-            'plist': parsePList("./uicomponents/" + fname)
-        })
+for root, dirs, files in os.walk("./templates/UI"):
+    for fname in files:
+        name, ext = fname.split('.')
+        if ext == "plist":
+            assets.append({
+                'source': cv2.imread(root + name + ".png", cv2.IMREAD_UNCHANGED),
+                'plist': parsePList(root + fname)
+            })
 
 templates = {}
 def loadTemplates(asset):

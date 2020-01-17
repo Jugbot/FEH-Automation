@@ -1,7 +1,8 @@
-
-INDICES_CACHE_NAME = "indices"
+INDICES_CACHE_NAME = "./data/indices"
+MAP_CACHE_NAME = "./data/maps"
 MAP_DIRECTORY = './templates/Maps'
 MAP_RATIO_L = 540/675
 MAP_RATIO_N = 540/720
 MAP_DIMENSIONS_L = (8, 10)
 MAP_DIMENSIONS_N = (6, 8)
+CLEAN = False
