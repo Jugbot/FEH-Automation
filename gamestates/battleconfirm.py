@@ -1,4 +1,5 @@
 
+from gamestates._base import GameStateBase
 
 class BattleConfirm(GameStateBase):
     def __init__(self, image):

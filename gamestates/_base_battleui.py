@@ -2,7 +2,7 @@ from gamestates._base import GameStateBase
 
 class BattleUI(GameStateBase):
     def __init__(self, image):
-        # super().__init__(image, data)
+        super().__init__(image)
         data={}
         self.parsed_data.update(data)
 

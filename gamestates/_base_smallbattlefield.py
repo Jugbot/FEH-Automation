@@ -1,16 +1,28 @@
 from constants import MAP_DIMENSIONS_N
-from database import mapdb 
-from database import elementdb 
+from database import mapDB 
+from database import elemDB 
+from gamestates._base import GameStateBase
 
 MAP_KEY = "small_battlefield"
 
+def findEntities(image):
+    entities = {}
+    path = './templates/friendly_healthbar.bmp'    
+    entities["allies"] = elemDB.findAll(image, cv2.imread(path))
+    path = './templates/enemy_healthbar.bmp'
+    entities["enemies"] = elemDB.findAll(image, cv2.imread(path))
+    return entities
+
 class SmallBattlefield(GameStateBase):
     def __init__(self, image):
-        super().__init__(image, data)
-        if not elementdb.has(MAP_KEY):
-            elementdb.find(image, mapImage, MAP_KEY)
-        s = elementdb.getSlice(MAP_KEY)
-        data={"mapData": mapdb.getMapData(MAP_KEY, image[s])}
+        super().__init__(image)
+        s = elemDB.findMap(image, MAP_KEY)
+        mapArea = image[s.index].copy()
+        name = mapDB.search(mapArea)
+        data = {
+            "mapData": mapDB.data(name, mapArea),
+            "entities": findEntities(image)
+        }
         self.parsed_data.update(data)
 
     @staticmethod
@@ -31,3 +43,7 @@ class SmallBattlefield(GameStateBase):
         assert((0,0) <= p2 <= MAP_DIMENSIONS_N)
         assert(p1 != p2)
 
+if __name__ == "__main__":
+    import cv2
+    img = cv2.imread('screenshot.png', -1)
+    o = SmallBattlefield(img)

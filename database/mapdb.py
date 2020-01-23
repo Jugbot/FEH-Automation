@@ -44,7 +44,7 @@ def getMapData(name, board_img=None):
     try:
         if CLEAN:
             raise IOError
-        terrain_data = np.loadtxt(os.path.join(MAP_DIRECTORY, name + '.csv'), dtype=np.uint8)
+        terrain_data = np.loadtxt(os.path.join(MAP_DIRECTORY, name + '.csv'), delimiter=",", dtype=np.uint8)
     except IOError as e:
         if board_img is None:
             raise e
@@ -109,6 +109,14 @@ class MapDB:
         self.db[name] = sample
 
     def search(self, image):
+        """Gives the name of the map from the image
+        
+        Arguments:
+            image {ndarray} -- Image
+        
+        Returns:
+            str -- name
+        """
         sample = MapDB.sample(image)
 
         best = None

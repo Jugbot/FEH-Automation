@@ -7,6 +7,20 @@ def showImage(image):
     cv2.imshow('D E B U G', image)
     cv2.waitKey()
 
+def showFeatures(image, template, kp1, kp2):
+    graph1 = cv2.drawKeypoints(image,kp1,None)
+    graph2 = cv2.drawKeypoints(template,kp2,None)
+    cv2.namedWindow('Features', cv2.WINDOW_NORMAL)
+    cv2.imshow('Features', graph1)
+    cv2.namedWindow('Features 2', cv2.WINDOW_NORMAL)
+    cv2.imshow('Features 2', graph2)
+    cv2.waitKey()
+
+def showFeatureMatches(image, template, kp1, kp2, matches):
+    graph = cv2.drawMatches(image,kp1,template,kp2,matches,None)
+    cv2.namedWindow('Matches', cv2.WINDOW_NORMAL)
+    cv2.imshow('Matches', graph)
+    cv2.waitKey()
 
 def showBestMatch(original_image, template, field):
     image = original_image.copy()

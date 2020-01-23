@@ -1,6 +1,6 @@
 
 class GameStateBase:
-    parsed_data = None
+    parsed_data = {}
     def __init__(self, image):
         """Parse image and store the data in parsed_data with data
         
@@ -8,7 +8,6 @@ class GameStateBase:
             image {[type]} -- [description]
             data {[type]} -- [description]
         """
-        super().__init__(image, data)
         data={}
         self.parsed_data.update(data)
 

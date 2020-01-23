@@ -1,3 +1,6 @@
+
+from gamestates._base import GameStateBase
+
 class MainView(GameStateBase):
     def __init__(self, image):
         super().__init__(image, data)

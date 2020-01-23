@@ -1,4 +1,5 @@
 from gamestates._base_smallbattlefield import SmallBattlefield
+from gamestates._base_battleui import BattleUI
 
 class TrainingTower(BattleUI, SmallBattlefield):
     def __init__(self, image):
