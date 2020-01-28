@@ -81,13 +81,11 @@ class MapDB:
             if fname.endswith('.png'):
                 name = fname[:-4]
                 if not self.has(name):
-                    self.add(cv2.imread(os.path.join(
-                        MAP_DIRECTORY, fname), cv2.IMREAD_GRAYSCALE), name)
+                    self.add(name, cv2.imread(os.path.join(
+                        MAP_DIRECTORY, fname), cv2.IMREAD_GRAYSCALE))
                 elif not os.path.exists(os.path.join(MAP_DIRECTORY, name + '.csv')):
                     getMapData(name, cv2.imread(os.path.join(
                         MAP_DIRECTORY, fname), cv2.IMREAD_GRAYSCALE))
-
-
         print('done')
 
     def __del__(self):
@@ -104,7 +102,7 @@ class MapDB:
             sample = sampleGrid(image, MAP_DIMENSIONS_L)
         return sample
 
-    def add(self, image, name):
+    def add(self, name, image):
         sample = MapDB.sample(image)
         self.db[name] = sample
 

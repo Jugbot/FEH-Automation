@@ -1,4 +1,4 @@
-from database.elementdb import ElementDB
+from database.elementdb import ElementDB, Selection
 from database.mapdb import MapDB
 
 mapDB = MapDB()
