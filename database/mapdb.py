@@ -5,8 +5,10 @@ import shelve
 import cv2
 import gui
 import os
+import json
 from util import mse
-from database.elementdb import findTemplate
+from jsonobject import JsonObject
+
 
 def createTerrainData(original_image):
     print("""
@@ -44,15 +46,15 @@ def getMapData(name, board_img=None):
     try:
         if CLEAN:
             raise IOError
-        terrain_data = np.loadtxt(os.path.join(MAP_DIRECTORY, name + '.csv'), delimiter=",", dtype=np.uint8)
+        terrain_data = np.loadtxt(os.path.join(
+            MAP_DIRECTORY, name + '.csv'), delimiter=",", dtype=np.uint8)
     except IOError as e:
         if board_img is None:
             raise e
         terrain_data = createTerrainData(board_img)
-        np.savetxt(os.path.join(MAP_DIRECTORY, name + '.csv'), terrain_data, delimiter=",", fmt="%d")
+        np.savetxt(os.path.join(MAP_DIRECTORY, name + '.csv'),
+                   terrain_data, delimiter=",", fmt="%d")
     return terrain_data
-
-
 
 
 def sampleGrid(image, size):
@@ -69,12 +71,12 @@ def sampleGrid(image, size):
 
 
 class MapDB:
+    """Database store for map recognition.
+    """
     def __init__(self):
-        super().__init__()
         if CLEAN:
             self.db = shelve.open(MAP_CACHE_NAME, flag='n')
         self.db = shelve.open(MAP_CACHE_NAME)
-        ### preload ###
         print("loading map assets... ", end='')
         for f in os.listdir(MAP_DIRECTORY):
             fname = os.fsdecode(f)
@@ -83,9 +85,9 @@ class MapDB:
                 if not self.has(name):
                     self.add(name, cv2.imread(os.path.join(
                         MAP_DIRECTORY, fname), cv2.IMREAD_GRAYSCALE))
-                elif not os.path.exists(os.path.join(MAP_DIRECTORY, name + '.csv')):
-                    getMapData(name, cv2.imread(os.path.join(
-                        MAP_DIRECTORY, fname), cv2.IMREAD_GRAYSCALE))
+                # elif not os.path.exists(os.path.join(MAP_DIRECTORY, name + '.csv')):
+                #     getMapData(name, cv2.imread(os.path.join(
+                #         MAP_DIRECTORY, fname), cv2.IMREAD_GRAYSCALE))
         print('done')
 
     def __del__(self):
@@ -108,10 +110,10 @@ class MapDB:
 
     def search(self, image):
         """Gives the name of the map from the image
-        
+
         Arguments:
             image {ndarray} -- Image
-        
+
         Returns:
             str -- name
         """
@@ -126,12 +128,14 @@ class MapDB:
 
         return best[0]
 
-    def data(self, name, image=None):
-        getMapData(name, image)
-        return getMapData(name)
+    def data(self, name):
+        with open(os.path.join(MAP_DATA, name + ".json"), 'r', encoding='utf-8') as f:
+            return JsonObject(json.load(f))
 
     def has(self, name):
         return name in self.db
 
+
 if __name__ == "__main__":
     mdb = MapDB()
+    print(mdb.data("F0001"), sep="\n")

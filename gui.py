@@ -37,12 +37,11 @@ def showSelections(image, selections):
 
 def showFeatureMatches(image, template, kp1, kp2, matches, H=None):
     if H is not None:
-        HI = np.linalg.inv(H)
         h, w = template.shape[:2]
         p1 = np.array((0, 0, 1))
         p2 = np.array((w, h, 1))
-        p1 = tuple((HI @ p1).astype(int))
-        p2 = tuple((HI @ p2).astype(int))
+        p1 = tuple((H @ p1).astype(int))
+        p2 = tuple((H @ p2).astype(int))
         cv2.rectangle(image,p1[:2],p2[:2],(0,0,255),2)
     graph = cv2.drawMatches(image,kp1,template,kp2,matches,None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
     name = 'Matches ' + getId()

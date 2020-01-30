@@ -11,5 +11,7 @@
   "cSpell.words": [
     "flann",
     "pytesseract"
-  ]
+  ],
+  "python.linting.enabled": true,
+  "python.linting.pycodestyleEnabled": true
 }

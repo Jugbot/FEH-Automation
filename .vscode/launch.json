@@ -5,11 +5,22 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Current File",
+      "name": "Run",
       "type": "python",
       "request": "launch",
       "program": "${file}",
       "console": "integratedTerminal",
+      // "cwd": "${fileDirname}"
+    },
+    {
+      "name": "Clean Run",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "env": {
+        "CLEAN": true
+      }
       // "cwd": "${fileDirname}"
     }
   ]

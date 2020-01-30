@@ -1,0 +1,3 @@
+[submodule "fehdata/json"]
+	path = fehdata/json
+	url = https://github.com/HertzDevil/feh-assets-json.git

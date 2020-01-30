@@ -1,81 +1,24 @@
-from constants import *
+import os
+import shelve
+
 import cv2
 import numpy as np
-import shelve
-import gui
-import os
-import ransac
 import skimage.feature
 
-
-def getDetectionField(image, template, grayscale=True):
-    h, w, c = template.shape
-    if c == 4:
-        color, a = template[:, :, :-1], template[:, :, -1]
-        if grayscale:
-            alpha = a  
-        else:
-            alpha = cv2.merge([a] * (c-1))
-        method = cv2.TM_CCORR_NORMED
-    else:
-        color = template
-        alpha = None
-        method = cv2.TM_CCOEFF_NORMED
-    if grayscale:
-        image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-        color = cv2.cvtColor(color, cv2.COLOR_RGB2GRAY)
-    # gui.showImage(image)
-    # gui.showImage(color)
-    # gui.showImage(alpha)
-    field = cv2.matchTemplate(image, color, method, None, alpha)
-    # showImage(field)
-    # cv2.imwrite("field.png", field)
-    # showBestMatch(image, template, field)
-    return field
-
-
-def findTemplate(image, template):
-    res = getDetectionField(image, template)
-    (_, maxVal, _, maxLoc) = cv2.minMaxLoc(res)
-    return maxLoc[::-1], maxVal
-
-
-def findTemplateScaleInvariant(image, template):
-    ws, hs = image.shape[:2]
-    h, w = template.shape[:2]
-    found = None
-    print("Starting scale-invariant search...")
-    for scale in np.linspace(0.5, 2.0, 100)[::-1]:
-        resized = cv2.resize(template, (int(w * scale), int(h * scale)))
-        if resized.shape[0] > ws or resized.shape[1] > hs:
-            continue
-
-        maxLoc, maxVal = findTemplate(image, resized)
-
-        if found is None or maxVal > found[1]:
-            found = (maxLoc, maxVal, scale)
-    return found
-
-
-def findTemplates(image, template, tolerance=0.05):
-    # gui.showImage(image)
-    # gui.showImage(template)
-    # cv2.waitKey()
-    res = getDetectionField(image, template, grayscale=False)
-    res *= 255
-    cv2.imwrite("field.png", res)
-    (_, maxVal, _, maxLoc) = cv2.minMaxLoc(res)
-    points = skimage.feature.peak_local_max(res,threshold_abs=maxVal-tolerance,threshold_rel=1.0-tolerance, indices=True)
-    return points
+import gui
+import ransac
+from constants import *
+from vision.template import *
+from vision.feature import featureTemplateMatch
 
 
 class Selection:
     def __init__(self, y, x, h, w):
-        self.x = x
-        self.y = y
-        self.h = h
-        self.w = w
-        self.center = (y+h//2, x+w//2)
+        self.x = int(x)
+        self.y = int(y)
+        self.h = int(h)
+        self.w = int(w)
+        self.center = (int(y+h//2), int(x+w//2))
         self.index = (slice(y, y+h), slice(x, x+w))
 
     def __str__(self):
@@ -99,8 +42,6 @@ class Selection:
 
     def splitY(self, t):
         pass
-
-
 
 
 class ElementDB:
@@ -127,7 +68,7 @@ class ElementDB:
         return val >= threshhold
 
     def find(self, source_img, element_img, cachename=""):
-        """Returns None if element does not exist in source, 
+        """Returns None if element does not exist in source,
         otherwise returns the coordinates of match
 
         Arguments:
@@ -149,16 +90,16 @@ class ElementDB:
         return s
 
     def findFrameX(self, source_img, element_img, cachename=""):
-        """Finds the rectangle containing the beginning and end 
+        """Finds the rectangle containing the beginning and end
         of an image (the source_img is split in two horizontally)
-        
+
         Arguments:
             source_img {ndarray} -- Image
             element_img {ndarray} -- Image
-        
+
         Keyword Arguments:
             cachename {str} -- Cachename (default: {""})
-        
+
         Returns:
             list -- list of Selections
         """
@@ -166,8 +107,8 @@ class ElementDB:
             s = self.db[cachename]
         else:
             h, w = element_img.shape[:2]
-            left = element_img[:,:w//2]
-            right = element_img[:,w//2:]
+            left = element_img[:, :w//2]
+            right = element_img[:, w//2:]
             a1 = findTemplates(source_img, left)[::-1]
             a2 = findTemplates(source_img, right)[::-1]
             # results ordered by height first
@@ -187,7 +128,7 @@ class ElementDB:
                         k1 += 1
                     else:
                         break
-                else: # y1 == y2:
+                else:  # y1 == y2:
                     s.append(Selection(y1, x1, h, w//2 + (x2 - x1)))
                     k1 += 1
                     k2 += 1
@@ -222,7 +163,7 @@ class ElementDB:
         return Selection(y, x, h, w), val
 
     def findMap(self, original_image, cachename):
-        """Specialized function for finding a map element on screen 
+        """Specialized function for finding a map element on screen
 
         Arguments:
             original_image {ndarray} -- Image
@@ -250,7 +191,8 @@ class ElementDB:
                 pos, value = findTemplate(image, template)
 
                 if bestMatch is None or value > bestMatch[-1]:
-                    bestMatch = (name, value)
+                    bestMatch = (name, pos, value)
+        pos = bestMatch[1]
         self.db[cachename] = Selection(
             pos[0], pos[1], template.shape[0], template.shape[1])
         return self.db[cachename]
