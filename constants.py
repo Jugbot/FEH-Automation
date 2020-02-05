@@ -4,7 +4,7 @@ from os import getenv
 LOCALITY = getenv('LOCALITY', "USEN")
 CLEAN = getenv('CLEAN', False)
 # Important directories
-DATA_DIR = "./data"
+DATA_DIR = "./database/data"
 TEMPLATES_DIR = "./templates"
 RIPPED_DATA = "./fehdata"
 ASSETS_DIR = "%s/assets" % RIPPED_DATA

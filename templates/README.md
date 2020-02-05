@@ -1,0 +1,1 @@
+This is a place for custom images based on fehdata/assets for computer vision.
